@@ -28,15 +28,16 @@ jobs:
 
     - name: Build and push Docker image to Artifact Registry
       run: |
-        IMAGE_NAME=asia-southeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/api-vanillatec-repo/${{ secrets.APP_DIR }}
+        IMAGE_NAME=asia-southeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/api-vanillatec-repo/api-vanillatech
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
 
     - name: Deploy to Cloud Run
       run: |
-        IMAGE_NAME=asia-southeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/api-vanillatec-repo/${{ secrets.APP_DIR }}
+        IMAGE_NAME=asia-southeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/api-vanillatec-repo/api-vanillatech
         gcloud run deploy api-vanillatech \
           --image $IMAGE_NAME \
-          --region ${{ secrets.GCP_REGION }} \
+          --set-env-vars ${{ secrets.ENV }}
+          --region asia-southeast2 \
           --platform managed \
           --allow-unauthenticated
