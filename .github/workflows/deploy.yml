@@ -37,7 +37,7 @@ jobs:
         IMAGE_NAME=asia-southeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/api-vanillatec-repo/api-vanillatech
         gcloud run deploy api-vanillatech \
           --image $IMAGE_NAME \
-          --set-env-vars ${{ secrets.ENV }}
+          --set-env-vars ${{ secrets.ENV }} \
           --region asia-southeast2 \
           --platform managed \
           --allow-unauthenticated
