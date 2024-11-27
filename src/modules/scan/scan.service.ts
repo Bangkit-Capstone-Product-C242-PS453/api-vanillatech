@@ -1,93 +1,62 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import * as tf from '@tensorflow/tfjs-node';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Injectable } from '@nestjs/common';
+import { PubSub } from '@google-cloud/pubsub';
 
 @Injectable()
-export class ScanService implements OnModuleInit {
-  private graphModel: tf.GraphModel;
-  private layersModel: tf.LayersModel;
-  private readonly classes = [
-    'akar busuk',
-    'busuk batang',
-    'busuk daun',
-    'hawar daun dan bunga',
-    'karat daun',
-    'powder mildew',
-  ];
+export class ScanService {
+  private pubSubClient: PubSub;
+  private topicName: string = 'projects/capstone-c242-ps453/topics/process-image';
+  private subscriptionName: string = 'projects/capstone-c242-ps453/subscriptions/process-image-sub';
 
-  async onModuleInit() {
+  constructor() {
+    this.pubSubClient = new PubSub();
+  }
+
+  async predictImage(imageBuffer: Buffer): Promise<string> {
     try {
-      // Load Graph Model
-      const graphModelPath = `file://${path.resolve(
-        __dirname,
-        '../../../models/graph-model/model.json',
-      )}`;
-      if (
-        fs.existsSync(
-          path.resolve(__dirname, '../../../models/graph-model/model.json'),
-        )
-      ) {
-        this.graphModel = await tf.loadGraphModel(graphModelPath);
-        console.log('Graph Model loaded successfully');
-      }
+      const base64Image = imageBuffer.toString('base64');
+      const data = {
+        image: base64Image,
+        timestamp: new Date().toISOString(),
+      };
 
-      // Load Layers Model
-      const layersModelPath = `file://${path.resolve(
-        __dirname,
-        '../../../models/layers-model/model.json',
-      )}`;
-      if (
-        fs.existsSync(
-          path.resolve(__dirname, '../../../models/layers-model/model.json'),
-        )
-      ) {
-        this.layersModel = await tf.loadLayersModel(layersModelPath);
-        console.log('Layers Model loaded successfully');
-      }
+      const messageBuffer = Buffer.from(JSON.stringify(data));
+      const messageId = await this.pubSubClient
+        .topic(this.topicName)
+        .publish(messageBuffer);
+
+      await this.subscribeToTopic();
+
+      return `Image published with ID: ${messageId}`;
     } catch (err) {
-      console.error('Error loading models:', err);
+      throw new Error(`Failed to publish image: ${err.message}`);
     }
   }
 
-  async preprocessImage(
-    imageBuffer: Buffer,
-    targetSize: [number, number] = [224, 224],
-  ) {
-    const tensor = tf.node.decodeImage(imageBuffer);
-    const resized = tf.image.resizeBilinear(tensor, targetSize);
-    const normalized = resized.div(255.0);
-    const batched = normalized.expandDims(0);
-    tensor.dispose();
-    resized.dispose();
-    return batched;
-  }
+  private async subscribeToTopic(): Promise<void> {
+    try {
+      const subscription = this.pubSubClient.subscription(this.subscriptionName);
 
-  async predictImage(imageBuffer: Buffer, useGraphModel = true) {
-    const model = useGraphModel ? this.graphModel : this.layersModel;
-    if (!model)
-      throw new Error(
-        `Model not loaded for ${useGraphModel ? 'Graph' : 'Layers'} Model`,
-      );
+      const messageHandler = (message: any) => {
+        console.log(`Received message: ${message.id}`);
+        console.log(`Message data: ${message.data.toString()}`);
+        console.log(`Attributes: ${JSON.stringify(message.attributes)}`);
+        message.ack();
+      };
 
-    const inputTensor = await this.preprocessImage(imageBuffer);
-    const predictions = model.predict(inputTensor) as tf.Tensor<tf.Rank>;
-    const predictionData = Array.from(predictions.dataSync());
+      const errorHandler = (error: any) => {
+        console.error(`Error: ${error}`);
+      };
 
-    const predictedIndex = predictionData.indexOf(Math.max(...predictionData));
-    const predictedClass = this.classes[predictedIndex];
-    const confidence = predictionData[predictedIndex] * 100;
+      subscription.on('message', messageHandler);
+      subscription.on('error', errorHandler);
 
-    const detailedPredictions = predictionData.map((p, i) => ({
-      class: this.classes[i],
-      confidence: `${(p * 100).toFixed(2)}%`,
-    }));
+      setTimeout(() => {
+        subscription.removeListener('message', messageHandler);
+        console.log('Unsubscribed from topic after timeout.');
+      }, 5000);
 
-    return {
-      modelType: useGraphModel ? 'Graph Model' : 'Layers Model',
-      class: predictedClass,
-      confidence: `${confidence.toFixed(2)}%`,
-      predictions: detailedPredictions,
-    };
+    } catch (err) {
+      console.error(`Failed to subscribe to topic: ${err.message}`);
+    }
   }
 }

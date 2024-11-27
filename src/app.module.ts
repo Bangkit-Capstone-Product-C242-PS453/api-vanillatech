@@ -11,7 +11,7 @@ import { AppController } from './app.controller';
 import { HealthCheckModule } from './modules/health/health-check.module';
 // import { AuthModule } from './modules/auth/auth.module';
 // import { UserModule } from './modules/user/user.module';
-// import { ScanModule } from './modules/scan/scan.module';
+import { ScanModule } from './modules/scan/scan.module';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { HealthCheckModule } from './modules/health/health-check.module';
     HealthCheckModule,
     // AuthModule,
     // UserModule,
-    // ScanModule,
+    ScanModule,
   ],
   controllers: [AppController],
   providers: [],
