@@ -38,8 +38,8 @@ export class ScanService {
 
       const messageHandler = (message: any) => {
         console.log(`Received message: ${message.id}`);
-        console.log(`Message data: ${message.data.toString()}`);
-        console.log(`Attributes: ${JSON.stringify(message.attributes)}`);
+        // console.log(`Message data: ${message.data.toString()}`);
+        // console.log(`Attributes: ${JSON.stringify(message.attributes)}`);
         message.ack();
       };
 

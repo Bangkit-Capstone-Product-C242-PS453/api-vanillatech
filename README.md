@@ -28,6 +28,7 @@
 
 ## Project structure
 ```bash
+credentials
 src/
 ├── modules/
 │   ├── auth/
@@ -36,6 +37,8 @@ src/
 │   │   ├── auth.module.ts
 │   │   └── jwt.strategy.ts
 │   ├── user/
+│   │   ├── entities
+│   │   │   └── user.entity.ts
 │   │   ├── user.controller.ts
 │   │   ├── user.service.ts
 │   │   └── user.module.ts
@@ -51,6 +54,8 @@ src/
 ├── app.controller.ts
 ├── app.module.ts
 └── main.ts
+.env
+README.md
 ```
 
 ## Project setup
