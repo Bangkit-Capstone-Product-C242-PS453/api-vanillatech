@@ -56,5 +56,5 @@ jobs:
           --region asia-southeast2 \
           --platform managed \
           --allow-unauthenticated \
-          --memory 2Gi \
-          --cpu 4
+          --memory 1Gi \
+          --cpu 1
