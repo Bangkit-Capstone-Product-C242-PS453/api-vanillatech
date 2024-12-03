@@ -3,23 +3,27 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { RateLimiterMiddleware } from './common/middleware/rate-limiter.middleware';
 import { AppController } from './app.controller';
-// import { typeOrmConfig } from './config/orm.config';
-// import { TypeOrmModule } from '@nestjs/typeorm';
-// import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { typeOrmConfig } from './config/orm.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Modules
 import { HealthCheckModule } from './modules/health/health-check.module';
-// import { AuthModule } from './modules/auth/auth.module';
-// import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ScanModule } from './modules/scan/scan.module';
+// import { UserModule } from './modules/user/user.module';
+import { RecordModule } from './modules/record/record.module';
+import { DiseaseModule } from './modules/diseases/disease.module';
 
 @Module({
   imports: [
-    // ConfigModule.forRoot(),
-    // TypeOrmModule.forRootAsync({
-    //   useFactory: typeOrmConfig,
-    //   inject: [ConfigService],
-    // }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: typeOrmConfig,
+      inject: [ConfigService],
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60,
@@ -27,8 +31,10 @@ import { ScanModule } from './modules/scan/scan.module';
       },
     ]),
     HealthCheckModule,
-    // AuthModule,
-    // UserModule,
+    AuthModule,
+        // UserModule,
+    DiseaseModule,
+    RecordModule,
     ScanModule,
   ],
   controllers: [AppController],
