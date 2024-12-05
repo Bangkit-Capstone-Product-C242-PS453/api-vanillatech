@@ -22,7 +22,7 @@ export class ScanController {
     if (!file) throw new BadRequestException('No image file uploaded.');
 
     try {
-      const result = await this.scanService.predictImage(file.buffer);
+      const result = await this.scanService.predictImage(file.buffer, request);
       return result;
     } catch (error) {
       throw new BadRequestException('Error processing image: ' + error.message);

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Record } from './entities/record.entity';
 import { CreateRecordDto } from './dtos/create.dto';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class RecordService {
@@ -12,9 +13,13 @@ export class RecordService {
   ) {}
 
   async create(createRecordDto: CreateRecordDto): Promise<Record> {
-    const record = this.recordRepository.create(createRecordDto);
-    return this.recordRepository.save(record);
-  }
+  const record = this.recordRepository.create({
+    ...createRecordDto,
+    user: { id: createRecordDto.id_user } as User,
+  });
+      
+  return this.recordRepository.save(record);
+}
 
   async findAll(): Promise<Record[]> {
     return await this.recordRepository.find({
