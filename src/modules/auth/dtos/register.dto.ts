@@ -2,6 +2,7 @@ import { IsString, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class RegisterDto {
     @IsString()
+    @MinLength(5)
     @IsNotEmpty()
     username: string;
 
@@ -10,7 +11,7 @@ export class RegisterDto {
     email: string;
 
     @IsString()
-    @MinLength(6)
+    @MinLength(5)
     @IsNotEmpty()
     password: string;
 }

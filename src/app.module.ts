@@ -24,6 +24,13 @@ import { DiseaseModule } from './modules/diseases/disease.module';
       useFactory: typeOrmConfig,
       inject: [ConfigService],
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: typeOrmConfig,
+      inject: [ConfigService],
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60,
