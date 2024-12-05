@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
-import { RefreshToken } from './entities/refresh-tokens.entity';
+import { RefreshToken } from './entities/refresh-token.entity';
 import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';

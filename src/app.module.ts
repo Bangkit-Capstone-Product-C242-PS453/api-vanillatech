@@ -12,10 +12,18 @@ import { HealthCheckModule } from './modules/health/health-check.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ScanModule } from './modules/scan/scan.module';
 // import { UserModule } from './modules/user/user.module';
-// import { RecordModule } from './modules/record/record.module';
+import { RecordModule } from './modules/record/record.module';
+import { DiseaseModule } from './modules/diseases/disease.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: typeOrmConfig,
+      inject: [ConfigService],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -31,8 +39,9 @@ import { ScanModule } from './modules/scan/scan.module';
     ]),
     HealthCheckModule,
     AuthModule,
-    // UserModule,
-    // RecordModule,
+        // UserModule,
+    DiseaseModule,
+    RecordModule,
     ScanModule,
   ],
   controllers: [AppController],

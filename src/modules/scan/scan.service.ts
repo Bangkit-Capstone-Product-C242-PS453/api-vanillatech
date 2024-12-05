@@ -1,19 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PubSub } from '@google-cloud/pubsub';
+import { Storage } from '@google-cloud/storage';
+import { RecordService } from '../record/record.service';
+import { DiseaseService } from '../diseases/disease.service';
 
 @Injectable()
 export class ScanService {
   private pubSubClient: PubSub;
+  private storageClient: Storage;
   private topicName: string =
     'projects/capstone-c242-ps453/topics/process-image';
   private subscriptionName: string =
     'projects/capstone-c242-ps453/subscriptions/result-image-sub';
+  private bucketName: string = 'predict-images';
 
-  constructor() {
+  constructor(
+    private readonly recordService: RecordService,
+    private readonly diseaseService: DiseaseService,
+  ) {
     this.pubSubClient = new PubSub();
+    this.storageClient = new Storage();
   }
 
-  async predictImage(imageBuffer: Buffer): Promise<any> {
+  async predictImage(imageBuffer: Buffer, request: any): Promise<any> {
     try {
       const base64Image = imageBuffer.toString('base64');
       const data = {
@@ -26,10 +35,36 @@ export class ScanService {
         .topic(this.topicName)
         .publish(messageBuffer);
 
-      return await this.subscribeToTopic(messageId);
+      const result = (await this.subscribeToTopic(messageId)).result;
+      const gcsFilePath = `${request.user.sub}-${Date.now()}.jpg`;
+      const gcsUrl = await this.uploadToGCS(imageBuffer, gcsFilePath);
 
+      const record = await this.recordService.create({
+        id_user: request.user.sub,
+        image: gcsUrl,
+      });
+
+      await this.linkDiseasesToRecord(record, result);
+      return this.recordService.findOne(record.id);
     } catch (err) {
-      throw new Error(`Failed to publish image: ${err.message}`);
+      throw new Error(`Failed to process image: ${err.message}`);
+    }
+  }
+
+  private async uploadToGCS(buffer: Buffer, destination: string): Promise<string> {
+    try {
+      const bucket = this.storageClient.bucket(this.bucketName);
+      const file = bucket.file(destination);
+
+      await file.save(buffer, {
+        resumable: false,
+        contentType: 'image/jpeg',
+        public: true,
+      });
+
+      return `https://storage.googleapis.com/${this.bucketName}/${destination}`;
+    } catch (err) {
+      throw new Error(`Failed to upload image to GCS: ${err.message}`);
     }
   }
 
@@ -66,5 +101,23 @@ export class ScanService {
         reject(new Error(`Failed to subscribe to topic: ${err.message}`));
       }
     });
+  }
+
+  private async linkDiseasesToRecord(record: any, result: any): Promise<void> {
+    const sortedDiseases = Object.entries(result)
+      .sort(
+        ([, scoreA]: [string, number], [, scoreB]: [string, number]) =>
+          scoreB - scoreA,
+      )
+      .slice(0, 3);
+
+    for (const [diseaseName] of sortedDiseases) {
+      const disease = await this.diseaseService.findDiseaseByName(diseaseName);
+      if (disease)
+        await this.diseaseService.createDiseaseRecord({
+          record: record,
+          disease: disease,
+        });
+    }
   }
 }
