@@ -7,7 +7,6 @@ import { RefreshToken } from '../modules/auth/entities/refresh-token.entity';
 import { DiseaseRecord } from 'src/modules/diseases/entities/disease-record.entity';
 
 export const typeOrmConfig = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
-  console.log(configService.get<string>('DB_HOST'));
   return {
     type: 'mysql',
     host: configService.get<string>('DB_HOST'),

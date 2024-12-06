@@ -12,7 +12,7 @@ export class DiseaseService {
     private diseaseRecordRepo: Repository<DiseaseRecord>,
   ) {}
 
-  async findAllDiseases() {
+  async findAll() {
     return await this.diseaseRepo.find();
   }
 
