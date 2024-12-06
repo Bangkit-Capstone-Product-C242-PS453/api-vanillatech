@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS disease_record;
+DROP TABLE IF EXISTS diseases_records;
+DROP TABLE IF EXISTS refresh_tokens;
 DROP TABLE IF EXISTS records;
 DROP TABLE IF EXISTS diseases;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS refresh_tokens;
 
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -125,4 +125,5 @@ INSERT INTO diseases (name, symptoms, prevention) VALUES
         'Gunakan fungisida seperti sulfur atau fungisida berbasis minyak neem yang ramah lingkungan',
         'Jaga kebersihan tanaman dan hindari kelembapan yang berlebihan di sekitar tanaman'
     )
-);
+),
+('Healthy (Sehat)', NULL, NULL);

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { RecordService } from './record.service';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 
@@ -10,6 +10,11 @@ export class RecordController {
   @Get()
   async findAll() {
     return await this.recordService.findAll();
+  }
+
+  @Get('/user')
+  async findAllbyUser(@Req() request) {
+    return await this.recordService.findAllByUser(request.user.sub);
   }
 
   @Get(':id')
