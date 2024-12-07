@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Disease } from './entities/disease.entity';
-import { DiseaseRecord } from './entities/disease-record.entity';
+import { Disease } from '../../entities/disease.entity';
+import { DiseaseRecord } from '../../entities/disease-record.entity';
 
 @Injectable()
 export class DiseaseService {

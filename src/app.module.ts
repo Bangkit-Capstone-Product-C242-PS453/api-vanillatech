@@ -13,7 +13,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ScanModule } from './modules/scan/scan.module';
 import { RecordModule } from './modules/record/record.module';
 import { DiseaseModule } from './modules/diseases/disease.module';
-// import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -31,7 +30,6 @@ import { DiseaseModule } from './modules/diseases/disease.module';
       },
     ]),
     HealthCheckModule,
-    // UserModule,
     AuthModule,
     DiseaseModule,
     RecordModule,

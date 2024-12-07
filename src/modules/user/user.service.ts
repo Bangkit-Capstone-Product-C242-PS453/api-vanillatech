@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../../entities/user.entity';
 import * as bcryptjs from 'bcryptjs';
 import { CreateUserDto } from './dtos/create.dto';
 import { UpdateUserDto } from './dtos/update.dto';
@@ -64,8 +64,12 @@ export class UserService {
       where: { email: updateUserDto.email, id: Not(id) },
     });
     if (existingEmail) throw new BadRequestException('Email already exists');
-
-    await this.userRepository.update(id, updateUserDto);
+    
+    if (updateUserDto.password)
+      updateUserDto.password = await bcryptjs.hash(updateUserDto.password, 10);
+    
+    const user = await this.userRepository.update(id, updateUserDto);
+    
     return this.findOne(id);
   }
 
