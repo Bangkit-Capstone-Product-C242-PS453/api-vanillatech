@@ -1,10 +1,10 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { User } from '../modules/user/entities/user.entity';
-import { Disease } from '../modules/diseases/entities/disease.entity';
-import { Record } from '../modules/record/entities/record.entity';
-import { RefreshToken } from '../modules/auth/entities/refresh-token.entity';
-import { DiseaseRecord } from 'src/modules/diseases/entities/disease-record.entity';
+import { User } from '../entities/user.entity';
+import { Disease } from '../entities/disease.entity';
+import { Record } from '../entities/record.entity';
+import { RefreshToken } from '../entities/refresh-token.entity';
+import { DiseaseRecord } from 'src/entities/disease-record.entity';
 
 export const typeOrmConfig = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
   return {

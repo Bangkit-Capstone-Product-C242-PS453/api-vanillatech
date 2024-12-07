@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
-import { DiseaseRecord } from 'src/modules/diseases/entities/disease-record.entity';
+import { User } from './user.entity';
+import { DiseaseRecord } from 'src/entities/disease-record.entity';
 
 @Entity('records')
 export class Record {

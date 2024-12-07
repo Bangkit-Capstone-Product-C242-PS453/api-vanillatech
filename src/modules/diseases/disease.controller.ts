@@ -1,11 +1,11 @@
 import { Controller, Get, Param} from '@nestjs/common'
 import { DiseaseService } from './disease.service'
 
-@Controller('disease')
-export class DiseaseController {
+@Controller('diseases')
+export class DiseasesController {
     constructor(private readonly diseaseService: DiseaseService) {}
 
-    @Get('all')
+    @Get()
     async getAllDiseases() {
         return await this.diseaseService.findAll()
     }

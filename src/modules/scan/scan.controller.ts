@@ -16,7 +16,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 export class ScanController {
   constructor(private readonly scanService: ScanService) {}
 
-  @Post('predict')
+  @Post()
   @UseInterceptors(FileInterceptor('image'))
   async predict(@Req() request, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No image file uploaded.');

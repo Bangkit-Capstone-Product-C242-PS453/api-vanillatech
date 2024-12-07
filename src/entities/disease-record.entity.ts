@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Record } from '../../record/entities/record.entity';
+import { Record } from './record.entity';
 import { Disease } from './disease.entity';
 
 @Entity('diseases_records')

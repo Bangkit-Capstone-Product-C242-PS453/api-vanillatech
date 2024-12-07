@@ -30,25 +30,32 @@
 ```bash
 credentials
 src/
+├── entities/
+│   ├── disease-record.entity.ts
+│   ├── disease.entity.ts
+│   ├── record.entity.ts
+│   ├── refresh-token.entity.ts
+│   └── user.entity.ts
 ├── modules/
 │   ├── auth/
 │   │   ├── auth.controller.ts
 │   │   ├── auth.service.ts
-│   │   ├── auth.module.ts
-│   │   └── jwt.strategy.ts
+│   │   └── auth.module.ts
 │   ├── user/
-│   │   ├── entities
-│   │   │   └── user.entity.ts
 │   │   ├── user.controller.ts
 │   │   ├── user.service.ts
 │   │   └── user.module.ts
+│   └── guards/
+│       ├── user.controller.ts
+│       ├── auth.guard.ts
+│       └── guest.guard.ts
 ├── common/
 │   ├── middleware/
 │   │   ├── auth.middleware.ts
 │   │   └── rate-limiter.middleware.ts
 │   └── guards/
 │       ├── auth.guard.ts
-│       └── role.guard.ts
+│       └── guest.guard.ts
 ├── config/
 │   └── app.config.ts
 ├── app.controller.ts
