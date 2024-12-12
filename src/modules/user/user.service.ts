@@ -18,18 +18,16 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const existingUser = await this.userRepository.findOne({
-      where: { username: createUserDto.username },
-    });
-    if (existingUser) throw new BadRequestException('Username already exists');
+    if (await this.userRepository.findOne({ where: { username: createUserDto.username } }))
+      throw new BadRequestException('Username already exists');
 
-    const existingEmail = await this.userRepository.findOne({
-      where: { email: createUserDto.email },
-    });
-    if (existingEmail) throw new BadRequestException('Email already exists');
+    if (await this.userRepository.findOne({ where: { email: createUserDto.email } }))
+      throw new BadRequestException('Email already exists');
 
-    const user = this.userRepository.create(createUserDto);
-    user.password = await bcryptjs.hash(createUserDto.password, 10);
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: await bcryptjs.hash(createUserDto.password, 10),
+    });
     return this.userRepository.save(user);
   }
 
@@ -38,12 +36,9 @@ export class UserService {
   }
 
   async findOne(id: number): Promise<User> {
-    try {
-      return this.userRepository.findOne({ where: { id } });
-    } catch (error) {
-      console.log(error);
-      throw new NotFoundException('User not found');
-    }
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   async findByUsername(username: string): Promise<User | null> {
@@ -55,29 +50,22 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const existingUser = await this.userRepository.findOne({
-      where: { username: updateUserDto.username, id: Not(id) },
-    });
-    if (existingUser) throw new BadRequestException('Username already exists');
+    if (await this.userRepository.findOne({ where: { username: updateUserDto.username, id: Not(id) } }))
+      throw new BadRequestException('Username already exists');
 
-    const existingEmail = await this.userRepository.findOne({
-      where: { email: updateUserDto.email, id: Not(id) },
-    });
-    if (existingEmail) throw new BadRequestException('Email already exists');
-    
+    if (await this.userRepository.findOne({ where: { email: updateUserDto.email, id: Not(id) } }))
+      throw new BadRequestException('Email already exists');
+
     if (updateUserDto.password)
       updateUserDto.password = await bcryptjs.hash(updateUserDto.password, 10);
-    
-    const user = await this.userRepository.update(id, updateUserDto);
-    
+
+    await this.userRepository.update(id, updateUserDto);
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
-    try {
-      await this.userRepository.delete(id);
-    } catch (error) {
-      throw new BadRequestException(error.message || 'Internal Server Error');
-    }
+    if (!(await this.userRepository.findOne({ where: { id } })))
+      throw new NotFoundException('User not found');
+    await this.userRepository.delete(id);
   }
 }

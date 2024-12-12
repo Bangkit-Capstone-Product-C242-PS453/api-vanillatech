@@ -23,7 +23,7 @@ export class RecordController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
-    return await this.recordService.remove(id);
+  async remove(@Param('id') id: number, @Req() request) {
+    return await this.recordService.remove(id, request.user.sub);
   }
 }

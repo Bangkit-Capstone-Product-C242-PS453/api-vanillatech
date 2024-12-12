@@ -113,7 +113,7 @@ INSERT INTO diseases (name, symptoms, prevention) VALUES
         'Gunakan varietas vanili yang tahan terhadap penyakit karat daun jika tersedia'
     )
 ),
-('Powdery Mildew (Embun Tepung)', 
+('Embun Tepung (Powdery Mildew)', 
     JSON_ARRAY(
         'Muncul lapisan putih atau abu-abu keputihan yang mirip bedak di permukaan daun',
         'Daun yang terkena infeksi bisa menjadi keriting, kering, dan rontok',
